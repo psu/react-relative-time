@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 /*
     References
@@ -7,36 +7,33 @@ import PropTypes from 'prop-types';
     jQuery Timeago plugin, http://timeago.yarp.com/, http://timeago.yarp.com/jquery.timeago.js
 */
 
-
 export default class RelativeTime extends React.Component {
   static propTypes = {
     /* Value */
     value: PropTypes.oneOfType([
       PropTypes.instanceOf(Date),
       PropTypes.number,
-      PropTypes.string
+      PropTypes.string,
     ]).isRequired,
 
     /* Datetime format which is used to set title attribute on dates. */
     titleFormat: PropTypes.string,
   }
 
-
   static defaultProps = {
     titleFormat: 'iso8601',
   }
-
 
   /* Strings for time difference */
   tokens = {
     prefixAgo: null,
     prefixFromNow: null,
-    suffixAgo: 'ago',
-    suffixFromNow: 'from now',
+    suffixAgo: '',
+    suffixFromNow: '',
     inPast: 'any moment now',
     seconds: 'a few seconds',
-    minute: 'a minute',
-    minutes: '%d minutes',
+    minute: '1',
+    minutes: '%d',
     hour: 'an hour',
     hours: '%d hours',
     day: 'a day',
@@ -46,103 +43,86 @@ export default class RelativeTime extends React.Component {
     year: 'a year',
     years: '%d years',
     wordSeparator: ' ',
-    numbers: []
+    numbers: [],
   }
-
 
   /* Convert string time to Date() */
   parseTimestring(iso8601) {
-    let str = iso8601.trim();
-    str = str.replace(/\.\d+/,''); // remove milliseconds
-    str = str.replace(/-/,'/').replace(/-/,'/');
-    str = str.replace(/T/,' ').replace(/Z/,' UTC');
-    str = str.replace(/([+-]\d\d):?(\d\d)/,' $1$2'); // -04:00 -> -0400
-    str = str.replace(/([+-]\d\d)$/,' $100'); // +09 -> +0900
-    return new Date(str);
+    let str = iso8601.trim()
+    str = str.replace(/\.\d+/, '') // remove milliseconds
+    str = str.replace(/-/, '/').replace(/-/, '/')
+    str = str.replace(/T/, ' ').replace(/Z/, ' UTC')
+    str = str.replace(/([+-]\d\d):?(\d\d)/, ' $1$2') // -04:00 -> -0400
+    str = str.replace(/([+-]\d\d)$/, ' $100') // +09 -> +0900
+    return new Date(str)
   }
-
 
   /* Replace %d in token with number */
-  substituteToken (string, number) {
-    let value = (this.tokens.numbers && this.tokens.numbers[number]) || number;
-    return string.replace(/%d/i, value);
+  substituteToken(string, number) {
+    let value = (this.tokens.numbers && this.tokens.numbers[number]) || number
+    return string.replace(/%d/i, value)
   }
-
 
   /* Relative time in words */
   relativeTimeString(date) {
     if (!(date instanceof Date)) {
-      return '';
+      return ''
     }
 
-    const delta = Date.now() - date.getTime();
+    const delta = Date.now() - date.getTime()
 
-    let prefix = this.tokens.prefixAgo;
-    let suffix = this.tokens.suffixAgo;
+    let prefix = this.tokens.prefixAgo
+    let suffix = this.tokens.suffixAgo
 
     /* Future */
     if (delta < 0) {
-      prefix = this.tokens.prefixFromNow;
-      suffix = this.tokens.suffixFromNow;
+      prefix = this.tokens.prefixFromNow
+      suffix = this.tokens.suffixFromNow
     }
 
-    let seconds = Math.abs(delta) / 1000;
-    let minutes = seconds / 60;
-    let hours = minutes / 60;
-    let days = hours / 24;
-    let years = days / 365;
+    let seconds = Math.abs(delta) / 1000
+    let minutes = seconds / 60
+    let hours = minutes / 60
+    let days = hours / 24
+    let years = days / 365
 
-
-    let words;
+    let words
 
     if (seconds < 45) {
-      words = this.substituteToken(this.tokens.seconds, Math.round(seconds));
-
+      words = this.substituteToken(this.tokens.seconds, Math.round(seconds))
     } else if (seconds < 90) {
-      words = this.substituteToken(this.tokens.minute, 1);
-
+      words = this.substituteToken(this.tokens.minute, 1)
     } else if (minutes < 45) {
-      words = this.substituteToken(this.tokens.minutes, Math.round(minutes));
-
+      words = this.substituteToken(this.tokens.minutes, Math.round(minutes))
     } else if (minutes < 90) {
-      words = this.substituteToken(this.tokens.hour, 1);
-
+      words = this.substituteToken(this.tokens.hour, 1)
     } else if (hours < 22) {
-      words = this.substituteToken(this.tokens.hours, Math.round(hours));
-
+      words = this.substituteToken(this.tokens.hours, Math.round(hours))
     } else if (hours < 35) {
-      words = this.substituteToken(this.tokens.day, 1);
-
+      words = this.substituteToken(this.tokens.day, 1)
     } else if (days < 25) {
-      words = this.substituteToken(this.tokens.days, Math.round(days));
-
+      words = this.substituteToken(this.tokens.days, Math.round(days))
     } else if (days < 45) {
-      words = this.substituteToken(this.tokens.month, 1);
-
+      words = this.substituteToken(this.tokens.month, 1)
     } else if (days < 365) {
-      words = this.substituteToken(this.tokens.months, Math.round(days / 30));
-
+      words = this.substituteToken(this.tokens.months, Math.round(days / 30))
     } else if (years < 1.5) {
-      words = this.substituteToken(this.tokens.year, 1);
-
+      words = this.substituteToken(this.tokens.year, 1)
     } else {
-      words = this.substituteToken(this.tokens.years, Math.round(years));
-
+      words = this.substituteToken(this.tokens.years, Math.round(years))
     }
 
-
-    return [prefix, words, suffix].join(this.tokens.wordSeparator).trim();
+    return [prefix, words, suffix].join(this.tokens.wordSeparator).trim()
   }
-
 
   /* Generate time string in specifier pattern */
   format(date, pattern) {
     if (!(date instanceof Date)) {
-      return '';
+      return ''
     }
 
     if (pattern.toLowerCase() === 'iso8601') {
-      return date.toISOString();
+      return date.toISOString()
     }
 
     let patterns = {
@@ -150,59 +130,50 @@ export default class RelativeTime extends React.Component {
       D: date.getDate(),
       H: date.getHours(),
       m: date.getMinutes(),
-      s: date.getSeconds()
-    };
+      s: date.getSeconds(),
+    }
 
     // replace M, D, H, m, s
-    pattern = pattern.replace(/(M+|D+|H+|m+|s+)/g, function(test) {
-      const key = test.slice(-1);
-      return ((test.length > 1 ? '0' : '') + patterns[key]).slice(-2);
-    });
+    pattern = pattern.replace(/(M+|D+|H+|m+|s+)/g, function (test) {
+      const key = test.slice(-1)
+      return ((test.length > 1 ? '0' : '') + patterns[key]).slice(-2)
+    })
 
     // replace Y
-    return pattern.replace(/(Y+)/g, function(test) {
-      return date.getFullYear().toString().slice(-test.length);
-    });
+    return pattern.replace(/(Y+)/g, function (test) {
+      return date.getFullYear().toString().slice(-test.length)
+    })
   }
-
 
   /* Display */
   render() {
-    let {
-        value, titleFormat,
-        ...props
-    } = this.props;
-
+    let { value, titleFormat, ...props } = this.props
 
     /* Type conversion */
-    let date;
+    let date
 
     if (value instanceof Date) {
-      date = value;
-
+      date = value
     } else if (typeof value === 'string') {
-      date = this.parseTimestring(value);
-
+      date = this.parseTimestring(value)
     } else if (typeof value === 'number') {
-      date = new Date(value);
-
+      date = new Date(value)
     } else {
-      return <span>Invalid date</span>;
-
+      return <span>Invalid date</span>
     }
 
-
     /* Format conversion */
-    let machineReadable = this.format(date, 'iso8601');    //  ISO-8601
-    let humanReadable = this.relativeTimeString(date);
+    let machineReadable = this.format(date, 'iso8601') //  ISO-8601
+    let humanReadable = this.relativeTimeString(date)
 
     return (
-        <time
-            title={this.format(date, titleFormat)}
-            {...props}
-            dateTime={machineReadable}>
-            {humanReadable}
-        </time>
-    );
+      <time
+        title={this.format(date, titleFormat)}
+        {...props}
+        dateTime={machineReadable}
+      >
+        {humanReadable}
+      </time>
+    )
   }
 }
