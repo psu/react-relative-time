@@ -31,7 +31,7 @@ export default class RelativeTime extends React.Component {
     suffixAgo: '',
     suffixFromNow: '',
     inPast: 'any moment now',
-    seconds: 'a few seconds',
+    seconds: 'now',
     minute: '1',
     minutes: '%d',
     hour: 'an hour',
