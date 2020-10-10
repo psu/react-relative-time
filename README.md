@@ -1,6 +1,6 @@
 # React Relative Time
 
-Forked from (https://github.com/aharshac/react-relative-time).
+Forked from https://github.com/aharshac/react-relative-time
 
 ## Changes
 
